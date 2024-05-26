@@ -18,7 +18,7 @@ One example of downloading it is with the following command
 ```python src/download.py --source JSON --directory data```  
 This will download both official and unofficial dataset from TACO's JSON and place the downloaded dataset into a directory called **data**  
 Another example is  
-```python src/download.py --source JSON --directory data --officialJSON official.json --unofficialJSON unofficial.json --maxWorker 6"```  
+```python src/download.py --source JSON --directory data --officialJSON official.json --unofficialJSON unofficial.json --maxWorker 6```  
 This will download both official and unofficial dataset from the provided JSON files and using at most 6 workers to download the dataset  
 
 After the download, the dataset's directory should look something like this
