@@ -46,3 +46,4 @@ data
 
 # Acknowledgements
 - Pedro F Proença and Pedro Simões. "TACO: Trash Annotations in Context for Litter Detection." arXiv:2003.06975 (2020). [Link](https://arxiv.org/abs/2003.06975) [Github](https://github.com/pedropro/TACO)
+- Tensorflow. "Object detection with Model Garden". [Link](https://www.tensorflow.org/tfmodels/vision/object_detection)
