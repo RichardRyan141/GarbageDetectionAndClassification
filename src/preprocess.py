@@ -65,6 +65,7 @@ def remove_very_small_boxes(directory, threshold, imgWidth, imgHeight):
             bbox_w = float(bbox_xmax) - float(bbox_x)
             bbox_h = float(bbox_ymax) - float(bbox_y)
             bbox_area = bbox_w * bbox_h / (imgWidth * imgHeight)
+            #print(line, "\t", bbox_w, " ", bbox_h, " ", bbox_area)
             if bbox_area >= threshold:
                 new_annotations.append(line)
             else:
@@ -188,7 +189,7 @@ def relabel_annotations(directory, json_path):
         
     label_dir = os.path.join(directory, "labels")
     class_id_map = get_class_id_mapping(json_path)
-    print(class_id_map)
+    #print(class_id_map)
 
     for label_file in os.listdir(label_dir):
         label_path = os.path.join(label_dir, label_file)
