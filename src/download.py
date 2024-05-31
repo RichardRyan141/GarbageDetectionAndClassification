@@ -41,7 +41,12 @@ def resize_bbox(bbox, original_size, new_size):
     new_width = width * width_scale
     new_height = height * height_scale
 
-    return [new_x, new_y, new_width, new_height]
+    x_min = new_x
+    y_min = new_y
+    x_max = new_x + new_width
+    y_max = new_y + new_height
+
+    return [x_min, y_min, x_max, y_max]
 
 def process_json(json_path, directory, dataset_source, max_workers):
     if dataset_source == "official":
@@ -105,6 +110,17 @@ def download_from_drive(gdriveID, data_dir):
 
         subprocess.run(['unzip', '-q', "data.zip", '-d', data_dir], check=True)
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
 def main():
     parser = argparse.ArgumentParser(description="Process images and annotations.")
     parser.add_argument('--source', type=str, required=True, choices=['JSON', 'drive'], help="Download source: 'JSON' or 'drive'")
@@ -112,9 +128,9 @@ def main():
     parser.add_argument('--officialJSON', type=str, required=False, help="Official TACO dataset JSON or a JSON of similar format")
     parser.add_argument('--unofficialJSON', type=str, required=False, help="Unofficial TACO dataset JSON or a JSON of similar format")
     parser.add_argument('--maxWorker', type=int, required=False, default=8, help="Number of concurrent workers to speed up download")
-    parser.add_argument('--GDriveID', type=str, required=False, default="1qzFvq1D9OX_4QT2q5-fN-Ct-slniUv_J", help="ID of a Google Drive zip of dataset")
-    parser.add_argument('--OfficialDL', type=bool, required=False, default=True, help="Whether to download the official dataset (only for JSON download)")
-    parser.add_argument('--UnofficialDL', type=bool, required=False, default=True, help="Whether to download the unofficial dataset (only for JSON download)")
+    parser.add_argument('--GDriveID', type=str, required=False, default="1JPoNdmpSgdMOZNhrQ7Ffshaxnno6_YzM", help="ID of a Google Drive zip of dataset")
+    parser.add_argument('--OfficialDL', type=str2bool, required=False, default=True, help="Whether to download the official dataset (only for JSON download)")
+    parser.add_argument('--UnofficialDL', type=str2bool, required=False, default=True, help="Whether to download the unofficial dataset (only for JSON download)")
 
     args = parser.parse_args()
     source = args.source
