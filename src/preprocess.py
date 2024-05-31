@@ -23,8 +23,8 @@ def remove_invalid_box_boundaries(directory, imgWidth=480, imgHeight=640):
         new_annotations = []
 
         for line in annotations:
-            class_id, bbox_x, bbox_y, bbox_w, bbox_h = map(float, line.split())
-            if bbox_x < 0 or bbox_x + bbox_w > imgWidth or bbox_y < 0 or bbox_y + bbox_h > imgHeight:
+            class_id, bbox_x, bbox_y, bbox_xmax, bbox_ymax = map(float, line.split())
+            if bbox_x < 0 or bbox_xmax > imgWidth or bbox_y < 0 or bbox_ymax > imgHeight:
                 invalid_boxes += 1
             else:
                 new_annotations.append(line)
@@ -51,7 +51,7 @@ def remove_boxes_from_images_with_high_box_count(directory, threshold):
 
     print(f"Found and removed {total_removed_boxes} boxes from {directory} due to high box count")
 
-def remove_very_small_boxes(directory, threshold):
+def remove_very_small_boxes(directory, threshold, imgWidth, imgHeight):
     label_dir = os.path.join(directory, "labels")
     total_removed_boxes = 0
 
@@ -61,8 +61,11 @@ def remove_very_small_boxes(directory, threshold):
         new_annotations = []
 
         for line in annotations:
-            class_id, bbox_x, bbox_y, bbox_w, bbox_h = line.split()
-            if float(bbox_w) * float(bbox_h) >= threshold:
+            class_id, bbox_x, bbox_y, bbox_xmax, bbox_ymax = line.split()
+            bbox_w = float(bbox_xmax) - float(bbox_x)
+            bbox_h = float(bbox_ymax) - float(bbox_y)
+            bbox_area = bbox_w * bbox_h / (imgWidth * imgHeight)
+            if bbox_area >= threshold:
                 new_annotations.append(line)
             else:
                 total_removed_boxes += 1
@@ -87,20 +90,22 @@ def remove_boxes_with_high_same_class_box_overlap(directory, threshold):
                 if i in removed_boxes or j in removed_boxes:
                     continue
 
-                class1, x1, y1, w1, h1 = map(float, boxes[i].split())
-                class2, x2, y2, w2, h2 = map(float, boxes[j].split())
+                class1, x1, y1, x1_max, y1_max = map(float, boxes[i].split())
+                class2, x2, y2, x2_max, y2_max = map(float, boxes[j].split())
 
                 if class1 != class2:
                     continue
 
-                x_overlap = max(0, min(x1 + w1 / 2, x2 + w2 / 2) - max(x1 - w1 / 2, x2 - w2 / 2))
-                y_overlap = max(0, min(y1 + h1 / 2, y2 + h2 / 2) - max(y1 - h1 / 2, y2 - h2 / 2))
+                x_overlap = max(0, max(x1, x2) - min(x1_max, x2_max))
+                y_overlap = max(0, max(y1, y2) - min(y1_max, y2_max))
 
                 intersect = x_overlap * y_overlap
-                union = w1 * h1 + w2 * h2 - intersect
+                area1 = (x1_max-x1) * (y1_max-y1)
+                area2 = (x2_max-x2) * (y2_max-y2)
+                union = area1 + area2 - intersect
                 IoU = intersect / union
                 if IoU > threshold:
-                    removed_boxes.add(i if w1 * h1 < w2 * h2 else j)
+                    removed_boxes.add(i if area1 < area2 else j)
 
         new_annotations = [boxes[i] for i in range(len(boxes)) if i not in removed_boxes]
         total_removed_boxes += len(removed_boxes)
@@ -138,7 +143,7 @@ def remove_labels_without_images(directory):
 def preprocess(directory, imgWidth=480, imgHeight=640, box_count_threshold=30, box_size_threshold=0.0015, box_iou_threshold=0.35):
     remove_invalid_box_boundaries(directory, imgWidth, imgHeight)
     remove_boxes_from_images_with_high_box_count(directory, box_count_threshold)
-    remove_very_small_boxes(directory, box_size_threshold)
+    remove_very_small_boxes(directory, box_size_threshold, imgWidth, imgHeight)
     remove_boxes_with_high_same_class_box_overlap(directory, box_iou_threshold)
     remove_images_without_label(directory)
     remove_labels_without_images(directory)
@@ -191,9 +196,9 @@ def relabel_annotations(directory, json_path):
         new_annotations = []
 
         for line in annotations:
-            class_id, bbox_x, bbox_y, bbox_h, bbox_w = line.split()
+            class_id, bbox_x, bbox_y, bbox_xmax, bbox_ymax = line.split()
             new_class_id = class_id_map[int(class_id)]
-            new_annotations.append(f"{new_class_id} {bbox_x} {bbox_y} {bbox_h} {bbox_w}")
+            new_annotations.append(f"{new_class_id} {bbox_x} {bbox_y} {bbox_xmax} {bbox_ymax}")
 
         write_label_file(label_path, new_annotations)
 
