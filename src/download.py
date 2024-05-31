@@ -72,7 +72,7 @@ def process_json(json_path, directory, dataset_source, max_workers):
 
         for i in range(nr_images):
             image = data['images'][i]
-            file_name = image['file_name'].split('/')[1].split('.')[0]
+            file_name = image['file_name'].split('/')[0] + "_" + image['file_name'].split('/')[1].split('.')[0]
             id = image['id']
             file_names[id] = file_name
             image_sizes[id] = (image['width'], image['height'])
