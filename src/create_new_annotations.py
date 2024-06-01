@@ -30,7 +30,7 @@ def get_new_annotations(categories, label_dir, width, height):
         bbox['x_max'] = float(x_max) / width
         bbox['y_max'] = float(y_max) / height
         bbox['class_name'] = categories[int(class_id)]
-        bbox['classes'] = int(class_id)
+        bbox['class_id'] = int(class_id)
         bboxes.append(bbox)
       annot['bboxes'] = bboxes
       new_annotations.append(annot)
@@ -64,11 +64,21 @@ def main():
         print("label map text file not found. Exiting program.")
         sys.exit(1)
   
-    official_label_dir = os.path.join(args.data_dir, "official", "labels")
-    unofficial_label_dir = os.path.join(args.data_dir, "unofficial", "labels")
+    train_label_dir = os.path.join(args.data_dir, "train", "labels")
+    val_label_dir = os.path.join(args.data_dir, "val", "labels")
+    test_label_dir = os.path.join(args.data_dir, "test", "labels")
 
-    write_annotations(args.label_map, official_label_dir, args.imgWidth, args.imgHeight)
-    write_annotations(args.label_map, unofficial_label_dir, args.imgWidth, args.imgHeight)
+    if not os.path.exists(train_label_dir):
+        print(f"Train folder ({train_label_dir}) not found. Exiting program.")
+        sys.exit(1)
+    if not os.path.exists(val_label_dir):
+        print(f"Validation folder ({val_label_dir}) not found. Exiting program.")
+        sys.exit(1)
+
+    write_annotations(args.label_map, train_label_dir, args.imgWidth, args.imgHeight)
+    write_annotations(args.label_map, val_label_dir, args.imgWidth, args.imgHeight)
+    if os.path.isdir(test_label_dir):
+        write_annotations(args.label_map, test_label_dir, args.imgWidth, args.imgHeight)
 
 if __name__ == "__main__":
     main()
