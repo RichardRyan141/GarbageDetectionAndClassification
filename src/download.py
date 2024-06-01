@@ -128,7 +128,7 @@ def main():
     parser.add_argument('--officialJSON', type=str, required=False, help="Official TACO dataset JSON or a JSON of similar format")
     parser.add_argument('--unofficialJSON', type=str, required=False, help="Unofficial TACO dataset JSON or a JSON of similar format")
     parser.add_argument('--maxWorker', type=int, required=False, default=8, help="Number of concurrent workers to speed up download")
-    parser.add_argument('--GDriveID', type=str, required=False, default="1JPoNdmpSgdMOZNhrQ7Ffshaxnno6_YzM", help="ID of a Google Drive zip of dataset")
+    parser.add_argument('--GDriveID', type=str, required=False, default="1FlW8k0amjxDX1ypR2yJLLengPnyHv3h6", help="ID of a Google Drive zip of dataset")
     parser.add_argument('--OfficialDL', type=str2bool, required=False, default=True, help="Whether to download the official dataset (only for JSON download)")
     parser.add_argument('--UnofficialDL', type=str2bool, required=False, default=True, help="Whether to download the unofficial dataset (only for JSON download)")
 
