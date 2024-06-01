@@ -229,7 +229,7 @@ def main():
 
     args = parser.parse_args()
     data_dir = args.directory
-    print(args.no_official)
+    #print(args.no_official)
 
     if not args.no_official:
         print("Preprocessing official dataset")
