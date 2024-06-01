@@ -25,7 +25,7 @@ def create_label_map(class_dict, output_path="label_map.txt"):
     label_map = {}
 
     for id in class_dict:
-        category_id = id
+        category_id = int(id) + 1
         category_name = class_dict[id]
         label_map[category_id] = category_name
 
