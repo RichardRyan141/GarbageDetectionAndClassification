@@ -29,7 +29,7 @@ def get_new_annotations(categories, label_dir, width, height):
         bbox['y_min'] = float(y_min) / height
         bbox['x_max'] = float(x_max) / width
         bbox['y_max'] = float(y_max) / height
-        bbox['class_name'] = categories[int(class_id)]
+        bbox['class_name'] = categories[int(class_id)-1]
         bbox['class_id'] = int(class_id)
         bboxes.append(bbox)
       annot['bboxes'] = bboxes
