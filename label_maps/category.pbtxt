@@ -1,0 +1,299 @@
+item {
+  id: 1
+  name: 'Aluminium foil'
+}
+
+item {
+  id: 2
+  name: 'Battery'
+}
+
+item {
+  id: 3
+  name: 'Blister pack'
+}
+
+item {
+  id: 4
+  name: 'Blister pack'
+}
+
+item {
+  id: 5
+  name: 'Bottle'
+}
+
+item {
+  id: 6
+  name: 'Bottle'
+}
+
+item {
+  id: 7
+  name: 'Bottle'
+}
+
+item {
+  id: 8
+  name: 'Bottle cap'
+}
+
+item {
+  id: 9
+  name: 'Bottle cap'
+}
+
+item {
+  id: 10
+  name: 'Broken glass'
+}
+
+item {
+  id: 11
+  name: 'Can'
+}
+
+item {
+  id: 12
+  name: 'Can'
+}
+
+item {
+  id: 13
+  name: 'Can'
+}
+
+item {
+  id: 14
+  name: 'Carton'
+}
+
+item {
+  id: 15
+  name: 'Carton'
+}
+
+item {
+  id: 16
+  name: 'Carton'
+}
+
+item {
+  id: 17
+  name: 'Carton'
+}
+
+item {
+  id: 18
+  name: 'Carton'
+}
+
+item {
+  id: 19
+  name: 'Carton'
+}
+
+item {
+  id: 20
+  name: 'Carton'
+}
+
+item {
+  id: 21
+  name: 'Cup'
+}
+
+item {
+  id: 22
+  name: 'Cup'
+}
+
+item {
+  id: 23
+  name: 'Cup'
+}
+
+item {
+  id: 24
+  name: 'Cup'
+}
+
+item {
+  id: 25
+  name: 'Cup'
+}
+
+item {
+  id: 26
+  name: 'Food waste'
+}
+
+item {
+  id: 27
+  name: 'Glass jar'
+}
+
+item {
+  id: 28
+  name: 'Lid'
+}
+
+item {
+  id: 29
+  name: 'Lid'
+}
+
+item {
+  id: 30
+  name: 'Other plastic'
+}
+
+item {
+  id: 31
+  name: 'Paper'
+}
+
+item {
+  id: 32
+  name: 'Paper'
+}
+
+item {
+  id: 33
+  name: 'Paper'
+}
+
+item {
+  id: 34
+  name: 'Paper'
+}
+
+item {
+  id: 35
+  name: 'Paper bag'
+}
+
+item {
+  id: 36
+  name: 'Paper bag'
+}
+
+item {
+  id: 37
+  name: 'Plastic bag & wrapper'
+}
+
+item {
+  id: 38
+  name: 'Plastic bag & wrapper'
+}
+
+item {
+  id: 39
+  name: 'Plastic bag & wrapper'
+}
+
+item {
+  id: 40
+  name: 'Plastic bag & wrapper'
+}
+
+item {
+  id: 41
+  name: 'Plastic bag & wrapper'
+}
+
+item {
+  id: 42
+  name: 'Plastic bag & wrapper'
+}
+
+item {
+  id: 43
+  name: 'Plastic bag & wrapper'
+}
+
+item {
+  id: 44
+  name: 'Plastic container'
+}
+
+item {
+  id: 45
+  name: 'Plastic container'
+}
+
+item {
+  id: 46
+  name: 'Plastic container'
+}
+
+item {
+  id: 47
+  name: 'Plastic container'
+}
+
+item {
+  id: 48
+  name: 'Plastic container'
+}
+
+item {
+  id: 49
+  name: 'Plastic glooves'
+}
+
+item {
+  id: 50
+  name: 'Plastic utensils'
+}
+
+item {
+  id: 51
+  name: 'Pop tab'
+}
+
+item {
+  id: 52
+  name: 'Rope & strings'
+}
+
+item {
+  id: 53
+  name: 'Scrap metal'
+}
+
+item {
+  id: 54
+  name: 'Shoe'
+}
+
+item {
+  id: 55
+  name: 'Squeezable tube'
+}
+
+item {
+  id: 56
+  name: 'Straw'
+}
+
+item {
+  id: 57
+  name: 'Straw'
+}
+
+item {
+  id: 58
+  name: 'Styrofoam piece'
+}
+
+item {
+  id: 59
+  name: 'Unlabeled litter'
+}
+
+item {
+  id: 60
+  name: 'Cigarette'
+}
