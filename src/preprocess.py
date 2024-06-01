@@ -141,6 +141,23 @@ def remove_labels_without_images(directory):
 
     print(f"Found and removed {total_removed_label} labels from {directory} without images")
 
+def reindex_class_ids(directory):
+    label_dir = os.path.join(directory, "labels")
+
+    for label_file in os.listdir(label_dir):
+        label_path = os.path.join(label_dir, label_file)
+        annotations = read_label_file(label_path)
+        new_annotations = []
+
+        for line in annotations:
+            class_id, bbox_x, bbox_y, bbox_xmax, bbox_ymax = line.split()
+            new_class_id = int(class_id) + 1  # Change to 1-indexed
+            new_annotations.append(f"{new_class_id} {bbox_x} {bbox_y} {bbox_xmax} {bbox_ymax}")
+
+        write_label_file(label_path, new_annotations)
+
+    print(f"Reindexed class IDs to 1-based indexing in {directory}")
+
 def preprocess(directory, imgWidth=480, imgHeight=640, box_count_threshold=30, box_size_threshold=0.0015, box_iou_threshold=0.35):
     remove_invalid_box_boundaries(directory, imgWidth, imgHeight)
     remove_boxes_from_images_with_high_box_count(directory, box_count_threshold)
@@ -148,6 +165,7 @@ def preprocess(directory, imgWidth=480, imgHeight=640, box_count_threshold=30, b
     remove_boxes_with_high_same_class_box_overlap(directory, box_iou_threshold)
     remove_images_without_label(directory)
     remove_labels_without_images(directory)
+    reindex_class_ids(directory)
     print()
 
 def get_super_class_dict(json_path):
