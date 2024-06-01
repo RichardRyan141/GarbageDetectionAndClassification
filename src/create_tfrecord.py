@@ -59,7 +59,7 @@ def main():
 
     writer.close()
     
-    print(f"TFrecord for {image_dir} created")
+    print(f"TFrecord for {args.image_dir} created\n")
 
 if __name__ == '__main__':
     main()
