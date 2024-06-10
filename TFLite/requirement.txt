@@ -1,0 +1,6 @@
+pycocotools
+tensorflow
+numpy
+opendatasets
+kaggle
+pillow
