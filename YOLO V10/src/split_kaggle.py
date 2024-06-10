@@ -17,15 +17,59 @@ def move_image_and_labels(directory, image_list, split_type, split_directory):
         shutil.copy(orig_img_path, dest_img_path)
         shutil.copy(orig_label_path, dest_label_path)
 
+def get_category_list(split_directory):
+    json_path = os.path.join(split_directory, "annotations.json")
+    if not os.path.exists(json_path):
+        print(f"Annotation json ({json_path}) not found")
+        sys.exit(1)
+    
+    with open(json_path, "r") as f:
+        data = json.loads(f.read())
+
+    categories = data['categories']
+    category_set = set()
+
+    for cat in categories:
+        cat['supercategory'] = cat['supercategory'].replace('&', 'and')
+
+        if cat['supercategory'] in ['Plastic glooves', 'Plastic utensils', 'Lid']:
+            cat['supercategory'] = 'Other plastic'
+        if cat['supercategory'] in ['Scrap metal', 'Food waste', 'Shoe', 'Rope and strings', 'Squeezable tube', 'Blister pack', 'Battery', 'Aluminium foil', 'Pop tab', 'Glass jar', 'Unlabeled litter']:
+            cat['supercategory'] = 'Miscelaneous'
+        if cat['supercategory'] == 'Paper bag':
+            cat['supercategory'] = 'Paper'
+        
+        category_set.add(cat['supercategory'])
+    return list(category_set)
+
+def create_yaml_file(split_directory, new_labels):
+    yaml_content = {
+        'names': new_labels,
+        'nc': len(new_labels),
+        'train': "../train/images",
+        'val': "../valid/images",
+    }
+
+    yaml_path = os.path.join(split_directory, "data.yaml")
+    
+    with open(yaml_path, "w") as f:
+        yaml.safe_dump(yaml_content, f)
+    
+    print(f"New YAML file created at {yaml_path}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Split dataset into train-val-test splits.")
-    parser.add_argument('--directory', type=str, required=True, help="Preprocessed dataset directory")
+    parser.add_argument('--directory', type=str, required=True, help="Dataset directory downloaded from kaggle")
     parser.add_argument('--split_directory', type=str, required=True, help="Directory to store splitted dataset")
     parser.add_argument('--train_split', type=float, required=False, default=0.85, help="Train split size ratio")
     parser.add_argument('--val_split', type=float, required=False, default=0.1, help="Validation split size ratio")
     parser.add_argument('--use_test', action='store_true', help="Choose to use test split as well")
     parser.add_argument('--shuffle', action='store_true', help="Randomize splitting or not")
     args = parser.parse_args()
+
+    args.directory = os.path.join("datasets", args.directory)
+    args.split_directory = os.path.join("datasets", args.split_directory)
 
     train_split = args.train_split
     val_split = args.val_split
@@ -75,22 +119,25 @@ def main():
     os.makedirs(os.path.join(args.split_directory, "train"))
     os.makedirs(os.path.join(args.split_directory, "train", "images"))
     os.makedirs(os.path.join(args.split_directory, "train", "labels"))
-    os.makedirs(os.path.join(args.split_directory, "val"))
-    os.makedirs(os.path.join(args.split_directory, "val", "images"))
-    os.makedirs(os.path.join(args.split_directory, "val", "labels"))
+    os.makedirs(os.path.join(args.split_directory, "valid"))
+    os.makedirs(os.path.join(args.split_directory, "valid", "images"))
+    os.makedirs(os.path.join(args.split_directory, "valid", "labels"))
     if args.use_test:
         os.makedirs(os.path.join(args.split_directory, "test"))
         os.makedirs(os.path.join(args.split_directory, "test", "images"))
         os.makedirs(os.path.join(args.split_directory, "test", "labels"))
     
     move_image_and_labels(args.directory, train_files, "train", args.split_directory)
-    move_image_and_labels(args.directory, val_files, "val", args.split_directory)
+    move_image_and_labels(args.directory, val_files, "valid", args.split_directory)
     if args.use_test:
         move_image_and_labels(args.directory, test_files, "test", args.split_directory)
     
     orig_json_path = os.path.join(args.directory, "annotations.json")
     dest_json_path = os.path.join(args.split_directory, "annotations.json")
     shutil.copy(orig_json_path, dest_json_path)
+
+    new_labels = get_category_list(args.split_directory)
+    create_yaml_file(args.split_directory)
 
 if __name__ == "__main__":
     main()
