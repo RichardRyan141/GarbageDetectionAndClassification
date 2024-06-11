@@ -193,7 +193,7 @@ def group_labels(directory, class_labels, class_grouped):
 
 def update_yaml(directory, new_labels):
     yaml_path = os.path.join(directory, "data.yaml")
-    with open(file_path, "r") as f:
+    with open(yaml_path, "r") as f:
         data = yaml.safe_load(f)
 
     new_names = [new_labels[i] for i in range(len(new_labels))]
