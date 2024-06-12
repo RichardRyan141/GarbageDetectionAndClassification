@@ -26,8 +26,9 @@ This model is a fine tuned YOLO v10-M on the roboflow dataset for 700 epochs
 # To-do list
 - [x] Add a code to download and preprocess data
 - [x] Add a code to train the model
-- [ ] Add a code for inference
+- [x] Add a code for inference
 - [ ] Add a full jupyter notebook demo from start (download data) to finish (custom inference)
+- [ ] Create a web ui for ease of training and inference
 
 # Acknowledgements
 1) TACO dataset by Divya - [dataset](https://universe.roboflow.com/divya-lzcld/taco-mqclx)
