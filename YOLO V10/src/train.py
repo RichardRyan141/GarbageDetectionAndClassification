@@ -1,5 +1,6 @@
 import subprocess
 import argparse
+import os
 
 def main():
     parser = argparse.ArgumentParser(description="Preprocess dataset.")
@@ -9,8 +10,9 @@ def main():
     parser.add_argument('--batch_size', type=int, required=False, default=8, help="Batch size for training")
     args = parser.parse_args()
 
+    cwd = os.getcwd()
     train_command = [
-        "yolo", "task=detect", "mode=train", f"epochs={args.epochs}", f"batch={args.batch_size}", "plots=True", f"model={args.weight}", f"data={args.directory}/data.yaml"
+        "yolo", "task=detect", "mode=train", f"epochs={args.epochs}", f"batch={args.batch_size}", "plots=True", f"model={args.weight}", f"data={cwd}/datasets/{args.directory}/data.yaml"
     ]
     subprocess.run(train_command, check=True)
 
