@@ -4,6 +4,8 @@ import subprocess
 import random
 import shutil
 import sys
+import json
+import yaml
 
 def move_image_and_labels(directory, image_list, split_type, split_directory):
     for img_name in image_list:
@@ -84,7 +86,7 @@ def main():
         print("Validation split must be larger than 0%")
         sys.exit(1)
     if not args.use_test:
-        train_split = 100 - val_split
+        train_split = 1 - val_split
     
     train_list, val_list, test_list = [], [], []
 

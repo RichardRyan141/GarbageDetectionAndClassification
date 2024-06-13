@@ -1,0 +1,227 @@
+import gradio as gr
+import subprocess
+
+def enable_fields(choice):
+    if choice == "kneroma @kaggle":
+        return (gr.update(visible=True), gr.update(visible=True), gr.update(visible=False), gr.update(visible=True),
+                gr.update(visible=True), gr.update(visible=True), gr.update(visible=False),
+                gr.update(visible=True), gr.update(visible=True), gr.update(visible=True), 
+                gr.update(visible=True), gr.update(visible=True), gr.update(visible=True), 
+                gr.update(visible=True), gr.update(visible=True))
+    elif choice == "divya @roboflow":
+        return (gr.update(visible=False), gr.update(visible=False), gr.update(visible=True), gr.update(visible=True),
+                gr.update(visible=True), gr.update(visible=False), gr.update(visible=True),
+                gr.update(visible=True), gr.update(visible=True), gr.update(visible=True), 
+                gr.update(visible=True), gr.update(visible=True), gr.update(visible=True), 
+                gr.update(visible=True), gr.update(visible=False))
+    else:
+        return (gr.update(visible=False), gr.update(visible=False), gr.update(visible=False), gr.update(visible=True),
+                gr.update(visible=False), gr.update(visible=False), gr.update(visible=False),
+                gr.update(visible=False), gr.update(visible=False), gr.update(visible=False), 
+                gr.update(visible=False), gr.update(visible=False), gr.update(visible=False), 
+                gr.update(visible=False), gr.update(visible=False))
+
+def run_script(command):
+    try:
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+        return result.stdout
+    except subprocess.CalledProcessError as e:
+        return f"An error occurred: {e.stderr}"
+
+def download_kaggle(kaggle_user, kaggle_key, directory):
+    kaggle_download_command = ["python", "YOLO V10/src/download.py", "--source", "kaggle", "--directory", str(directory), "--kaggle_username", str(kaggle_user), "--kaggle_key", str(kaggle_key)]
+    print("Downloading data from kaggle")
+    return run_script(kaggle_download_command)
+
+def download_roboflow(roboflow_key, directory):
+    roboflow_download_command = ["python", "YOLO V10/src/download.py", "--source", "roboflow", "--directory", str(directory), "--roboflow_key", str(roboflow_key)]
+    print("Downloading data from roboflow")
+    return run_script(roboflow_download_command)
+
+def preprocess_kaggle(directory, max_box_count, min_box_size_ratio, max_iou):
+    preprocess_kaggle_command = ["python", "YOLO V10/src/preprocess_kaggle.py", "--directory", str(directory), "--max_box_count", str(max_box_count), "--min_box_size", str(min_box_size_ratio), "--max_iou", str(max_iou)]
+    print("Preprocessing data from kaggle")
+    return run_script(preprocess_kaggle_command)
+
+def split_kaggle(directory, train_split, val_split, use_test, shuffle, split_directory):
+    if not use_test:
+        train_split = 1.0 - val_split
+    split_kaggle_command = ["python", "YOLO V10/src/split_kaggle.py", "--directory", str(directory), "--split_directory", str(split_directory), "--train_split", str(train_split), "--val_split", str(val_split)]
+    if use_test:
+        split_kaggle_command.append("--use_test")
+    if shuffle:
+        split_kaggle_command.append("--shuffle")
+
+    print(f"Splitting data from {directory} to {split_directory} with a {train_split}/{val_split}/{1-train_split-val_split} train-val-test split")
+    return run_script(split_kaggle_command)
+
+def preprocess_roboflow(directory, max_box_count, min_box_size_ratio, max_iou):
+    preprocess_roboflow_command = ["python", "YOLO V10/src/preprocess_roboflow.py", "--directory", str(directory), "--max_box_count", str(max_box_count), "--min_box_size", str(min_box_size_ratio), "--max_iou", str(max_iou)]
+
+    print("Preprocessing data from roboflow")
+    return run_script(preprocess_roboflow_command)
+
+def train_yolov10(directory, epochs, batch_size, weight):
+    yolov10_train_command = ["python", "YOLO V10/src/train.py","--directory", str(directory), "--epochs", str(epochs), "--weight", str(weight), "--batch_size", str(batch_size)]
+    print(f"Training on YOLOv10 for {epochs} epochs")
+    return run_script(yolov10_train_command)
+
+def infer_image_yolov10(image_path, weight, confidence_level, result_dir):
+    yolov10_image_infer_command = ["python", "YOLO V10/src/inference.py","--source", "image", "--image", str(image_path), "--weight", str(weight), "--result_directory", str(result_dir), "--conf", {confidence_level}]
+    print(f"Doing inference on {image_path}")
+    return run_script(yolov10_image_infer_command)
+
+def infer_video_yolov10(video_path, weight, confidence_level, result_dir):
+    yolov10_video_infer_command = ["python", "YOLO V10/src/inference.py","--source", "video", "--video", str(video_path), "--weight", str(weight), "--result_directory", str(result_dir), "--conf", {confidence_level}]
+    print(f"Doing inference on {video_path}")
+    return run_script(yolov10_video_infer_command)
+
+def infer_dir_yolov10(dir_path, weight, confidence_level, result_dir):
+    yolov10_dir_infer_command = ["python", "YOLO V10/src/inference.py","--source", "folder", "--directory", str(dir_path), "--weight", str(weight), "--result_directory", str(result_dir), "--conf", {confidence_level}]
+    print(f"Doing inference on {dir_path}")
+    return run_script(yolov10_dir_infer_command)
+
+def main():
+    custom_css = """
+        #image-upload {
+            flex-grow: 1;
+        }
+        #params .tabs {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        #params .tabitem[style="display: block;"] {
+            flex-grow: 1;
+            display: flex !important;
+        }
+        #params .gap {
+            flex-grow: 1;
+        }
+        #params .form {
+            flex-grow: 1 !important;
+        }
+        #params .form > :last-child{
+            flex-grow: 1;
+        }
+    """
+
+    with gr.Blocks(css=custom_css, title="TACO Web UI") as demo:
+        with gr.Tabs():
+            with gr.TabItem("Download"):
+                with gr.TabItem("kneroma @ kaggle"):
+                    with gr.Group():
+                        with gr.Row():
+                            kaggle_directory = gr.Textbox(label="Data directory")
+                            with gr.Row(elem_id="params"):
+                                with gr.Column():
+                                    kaggle_user = gr.Textbox(label="Kaggle Username")
+                                    kaggle_key = gr.Textbox(label="Kaggle Key")
+                                    kaggle_download_button = gr.Button("Download")
+                                with gr.Column():
+                                    kaggle_max_box_count = gr.Slider(label="Max Box Count", minimum=10, maximum=100, step=1)
+                                    kaggle_min_box_size_ratio = gr.Number(label="Min Box Size Ratio", value=0.00015)
+                                    kaggle_max_iou = gr.Number(label="Max IOU", value=0.35)
+                                    kaggle_preprocess_button = gr.Button("Preprocess")
+                                with gr.Column():
+                                    kaggle_train_split = gr.Slider(label="Train Split", minimum=0.5, maximum=1, step=0.01, value=0.8, interactive=True)
+                                    kaggle_val_split = gr.Slider(label="Val Split", minimum=0, maximum=0.5, step=0.01, value=0.2, interactive=True)
+                                    kaggle_use_test = gr.Checkbox(label="Use Test")
+                                    kaggle_shuffle = gr.Checkbox(label="Shuffle dataset")
+                                    kaggle_split_directory = gr.Textbox(label="Splitted data directory")
+                                    kaggle_split_button = gr.Button("Split")
+                with gr.TabItem("divya @roboflow"):
+                    with gr.Group():
+                        with gr.Row():
+                            roboflow_directory = gr.Textbox(label="Data directory")
+                            with gr.Row(elem_id="params"):
+                                with gr.Column():
+                                    roboflow_key = gr.Textbox(label="Roboflow Key")
+                                    roboflow_download_button = gr.Button("Download")
+                                with gr.Column():
+                                    roboflow_max_box_count = gr.Slider(label="Max Box Count", minimum=10, maximum=100, step=1)
+                                    roboflow_min_box_size_ratio = gr.Number(label="Min Box Size Ratio", value=0.00015)
+                                    roboflow_max_iou = gr.Number(label="Max IOU", value=0.35)
+                                    roboflow_preprocess_button = gr.Button("Preprocess")
+                
+                download_output = gr.Textbox(label="Output", interactive=False, lines=5)
+                
+                kaggle_download_button.click(download_kaggle,
+                                             inputs=[kaggle_user, kaggle_key, kaggle_directory],
+                                             outputs=[download_output])
+                kaggle_preprocess_button.click(preprocess_kaggle,
+                                               inputs=[kaggle_directory, kaggle_max_box_count, kaggle_min_box_size_ratio, kaggle_max_iou],
+                                               outputs=[download_output])
+                kaggle_split_button.click(split_kaggle,
+                                          inputs=[kaggle_directory, kaggle_train_split, kaggle_val_split, kaggle_use_test, kaggle_shuffle, kaggle_split_directory],
+                                          outputs=[download_output])
+
+                roboflow_download_button.click(download_roboflow,
+                                               inputs=[roboflow_key, roboflow_directory],
+                                               outputs=[download_output])
+                roboflow_preprocess_button.click(preprocess_roboflow,
+                                                 inputs=[roboflow_directory, roboflow_max_box_count, roboflow_min_box_size_ratio, roboflow_max_iou],
+                                                 outputs=[download_output])
+            with gr.TabItem("Train"):
+                with gr.TabItem("TF Model Garden"):
+                    gr.Markdown("## TBA")
+                with gr.TabItem("TFLite"):
+                    gr.Markdown("## TBA")
+                with gr.TabItem("YOLO V10"):
+                    with gr.Group():
+                        with gr.Row(elem_id="params"):
+                            yolov10_data_directory = gr.Textbox(label="Data directory name (inside of /datasets)")
+                            yolov10_weight_path = gr.Textbox(label="YOLO model weight path")
+                            with gr.Column():
+                                yolov10_epoch_count = gr.Number(label="Epoch", value=20, precision=0)
+                            with gr.Column():
+                                yolov10_batch_size = gr.Slider(label="Batch Size", minimum=1, maximum=128, step=1, value=8, interactive=True)
+
+                        yolov10_train_button = gr.Button("Train")
+    
+                train_output = gr.Textbox(label="Output", interactive=False, lines=20)
+
+                yolov10_train_button.click(train_yolov10,
+                                           inputs=[yolov10_data_directory, yolov10_epoch_count, yolov10_batch_size, yolov10_weight_path],
+                                           outputs=[train_output])
+
+            with gr.TabItem("Inference"):
+                with gr.TabItem("TF Model Garden"):
+                    gr.Markdown("## TBA")
+                with gr.TabItem("TFLite"):
+                    gr.Markdown("## TBA")
+                with gr.TabItem("YOLO V10"):
+                    with gr.Row(elem_id="params"):
+                        inference_yolov10_weight_path = gr.Textbox(label="YOLO model weight path")
+                        inference_yolov10_confidence_level = gr.Slider(label="Minimum confidence level", minimum=0, maximum=1.0, step=0.01, value=0.35, interactive=True)
+                        inference_yolov10_result_directory = gr.Textbox(label="Result directory")
+                    with gr.TabItem("Image"):
+                        inference_yolov10_image_path = gr.Textbox(label="Image path")
+                        inference_yolov10_image_button = gr.Button("Inference")
+                        inference_yolov10_original_image = gr.Image(label="Original Image")
+                        inference_yolov10_inferred_image = gr.Image(label="Inferred Image")
+                    with gr.TabItem("Video"):
+                        inference_yolov10_video_path = gr.Textbox(label="Video path")
+                        inference_yolov10_video_button = gr.Button("Inference")
+                        inference_yolov10_original_video = gr.Video(label="Original Video")
+                        inference_yolov10_inferred_video = gr.Video(label="Inferred Video")
+                    with gr.TabItem("Directory"):
+                        inference_yolov10_directory_path = gr.Textbox(label="Directory path")
+                        inference_yolov10_directory_button = gr.Button("Inference")
+                        directory_inference_output = gr.Textbox(label="Output", interactive=False, lines=20)
+
+                inference_yolov10_image_button.click(infer_image_yolov10,
+                                                     inputs=[inference_yolov10_image_path, inference_yolov10_weight_path, inference_yolov10_confidence_level, inference_yolov10_result_directory],
+                                                     outputs=[inference_yolov10_original_image, inference_yolov10_inferred_image])
+                inference_yolov10_video_button.click(infer_video_yolov10,
+                                                     inputs=[inference_yolov10_video_path, inference_yolov10_weight_path, inference_yolov10_confidence_level, inference_yolov10_result_directory],
+                                                     outputs=[inference_yolov10_original_video, inference_yolov10_inferred_video])
+                inference_yolov10_directory_button.click(infer_dir_yolov10,
+                                                         inputs=[inference_yolov10_directory_path, inference_yolov10_weight_path, inference_yolov10_confidence_level, inference_yolov10_result_directory],
+                                                         outputs=[directory_inference_output])
+
+
+    demo.launch()
+
+if __name__ == "__main__":
+    main()

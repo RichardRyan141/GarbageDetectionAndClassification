@@ -65,20 +65,20 @@ def main():
 
         shutil.rmtree(orig_result_dir)
     else:
-        for img_name in os.listdir(args.directory):
-            img_path = os.path.join(args.directory, img_name)
+        for file_name in os.listdir(args.directory):
+            file_path = os.path.join(args.directory, file_name)
             if (not is_image(file_path)) and (not is_video(file_path)):
                 continue
 
             infer_command = [
-                "yolo", "task=detect", "mode=predict", f"conf={args.conf}", "save=True", f"model={args.weight}", f"source={img_path}"
+                "yolo", "task=detect", "mode=predict", f"conf={args.conf}", "save=True", f"model={args.weight}", f"source={file_path}"
             ]
             subprocess.run(infer_command , check=True)
 
             orig_result_dir = "runs/detect/predict"
 
             if (not os.path.exists(orig_result_dir)) or (len(os.listdir(orig_result_dir)) == 0):
-                print(f"No results found in the prediction directory for {img_name}.")
+                print(f"No results found in the prediction directory for {file_path}.")
                 continue
 
             orig_result_path = os.path.join(orig_result_dir, os.listdir(orig_result_dir)[0])

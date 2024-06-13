@@ -1,0 +1,11 @@
+supervision
+roboflow
+gradio
+pycocotools
+tensorflow
+numpy
+opendatasets
+kaggle
+pillow
+requests
+gdown
